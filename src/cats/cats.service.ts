@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { UpdateCatDto } from './dto/update-cat.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -28,8 +28,25 @@ export class CatsService {
     return await this.catRepository.findOneBy({id});
   }
 
-  async update(id: number, updateCatDto: UpdateCatDto) {
-    return await this.catRepository.update(id, updateCatDto);
+  async update(id: number, updateCatDto: UpdateCatDto) { 
+    const cat = await this.catRepository.findOneBy({id});
+    if (!cat) {
+      throw new NotFoundException(`Cat with ID ${id} not found`);
+    }
+
+    if (updateCatDto.name) {
+      cat.name = updateCatDto.name;
+    }
+
+    if (updateCatDto.age) {
+      cat.age = updateCatDto.age;
+    }
+
+    if (updateCatDto.breed) {
+      cat.breed = updateCatDto.breed;
+    }
+
+    return this.catRepository.save(cat);
   }
 
   async remove(id: number) {
