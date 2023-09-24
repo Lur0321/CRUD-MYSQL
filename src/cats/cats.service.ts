@@ -1,23 +1,38 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { UpdateCatDto } from './dto/update-cat.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Cat } from './entities/cat.entity';
 import { Repository } from 'typeorm/repository/Repository';
+import { Breed } from 'src/breed/entities/breed.entity';
 
 @Injectable()
 export class CatsService {
+  [x: string]: any;
 
   constructor(
 
     @InjectRepository(Cat)
-   private readonly catRepository: Repository<Cat>
+   private readonly catRepository: Repository<Cat>, 
+
+   @InjectRepository(Breed)
+   private readonly breedRepository: Repository<Breed>
   ){}
 
   async create(createCatDto: CreateCatDto) {
+    const breed = await this.breedRepository.findOneBy({ name: createCatDto.breed});
+    
+    if(!breed){
+      throw new BadRequestException('Breed not found');
+    }
+    return await this.catRepository.save({
+      ...createCatDto,
+      breed
+    });
     /*const cat = this.catRepository.create(createCatDto);
     return await this.catRepository.save(cat);*/
-    return await this.catRepository.save(createCatDto);
+    //return await this.catRepository.save(createCatDto);
+    return;
   }
 
   async findAll() {
@@ -29,7 +44,7 @@ export class CatsService {
   }
 
   async update(id: number, updateCatDto: UpdateCatDto) { 
-    const cat = await this.catRepository.findOneBy({id});
+    /*const cat = await this.catRepository.findOneBy({id});
     if (!cat) {
       throw new NotFoundException(`Cat with ID ${id} not found`);
     }
@@ -46,7 +61,7 @@ export class CatsService {
       cat.breed = updateCatDto.breed;
     }
 
-    return this.catRepository.save(cat);
+    return this.catRepository.save(cat);*/
   }
 
   async remove(id: number) {
