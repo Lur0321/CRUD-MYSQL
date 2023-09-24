@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { CatsModule } from './cats/cats.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { BreedModule } from './breed/breed.module';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       database: 'db_crud',
       autoLoadEntities: true,
       synchronize: true,
-    })
+    }),
+    BreedModule
   ],
   controllers: [],
   providers: [],
