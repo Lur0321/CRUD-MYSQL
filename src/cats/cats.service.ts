@@ -44,7 +44,7 @@ export class CatsService {
   }
 
   async update(id: number, updateCatDto: UpdateCatDto) { 
-    /*const cat = await this.catRepository.findOneBy({id});
+    const cat = await this.catRepository.findOneBy({id});
     if (!cat) {
       throw new NotFoundException(`Cat with ID ${id} not found`);
     }
@@ -57,11 +57,19 @@ export class CatsService {
       cat.age = updateCatDto.age;
     }
 
-    if (updateCatDto.breed) {
-      cat.breed = updateCatDto.breed;
+    if (updateCatDto.breed) { 
+      // Buscar la instancia de Breed correspondiente al nombre de la raza
+      const breed = await this.breedRepository.findOneBy({ name: updateCatDto.breed });
+  
+      if (!breed) {
+        throw new NotFoundException(`Breed '${updateCatDto.breed}' not found`);
+      }
+  
+      // Asignar la instancia de Breed al gato
+      cat.breed = breed;
     }
 
-    return this.catRepository.save(cat);*/
+    return this.catRepository.save(cat);
   }
 
   async remove(id: number) {
